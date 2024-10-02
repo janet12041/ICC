@@ -1,0 +1,646 @@
+package mx.unam.ciencias.icc.test;
+
+import java.util.Random;
+import mx.unam.ciencias.icc.CampoLibro;
+import mx.unam.ciencias.icc.Libro;
+import mx.unam.ciencias.icc.ExcepcionLineaInvalida;
+import mx.unam.ciencias.icc.Registro;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.Timeout;
+
+/**
+ * Clase para pruebas unitarias de la clase {@link Libro}.
+ */
+public class TestLibro {
+
+    /** Expiración para que ninguna prueba tarde más de 5 segundos. */
+    @Rule public Timeout expiracion = Timeout.seconds(5);
+
+    /* Títulos y autores. */
+    private static final String[][] DATOS = {
+	{"Don Quijote de la Mancha", "Miguel de Cervantes"},
+	{"Sin novedad en el frente", "Erich Maria Remarque"},
+	{"Rimas y leyendas", "Gustavo Adolfo Bécquer"},
+	{"La Divina Comedia", "Dante Alighieri"},
+	{"El conde de Montecristo", "Alejandro Dumas"},
+	{"El psicoanalista", "John Katzenbach"},
+	{"Calculus", "Michael Spivak"},
+	{"La región más transparente", "Carlos Fuentes"},
+	{"Orgullo y prejuicio", "Jane Austen"},
+	{"Noches de verano", "Mahbod Seraji"}
+    };
+
+    /* Editoriales. */
+    private static final String[] EDITORIALES = {
+        "Editores Mexicanos Unidos", "Porrua", "Editorial Época",
+	"Plutón Ediciones", "Fondo de Cultura Económica", "Alfaguara", "Emecé",
+	"Editorial Reverté", "Alianza Editorial",
+	"Penguin Random House Grupo Editorial"
+    };
+
+    /* Generador de números aleatorios. */
+    private static Random random;
+
+    /**
+     * Obtiene un título y autor aleatoriamente.
+     * @return un título y autor aleatoriamente.
+     */
+    public static String[] datosAleatorios() {
+        int d = random.nextInt(DATOS.length);
+        return DATOS[d];
+    }
+
+    /**
+     * Obtiene una editorial aleatoriamente.
+     * @return una editorial aleatoriamente.
+     */
+    public static String editorialAleatoria() {
+	int e = random.nextInt(EDITORIALES.length);
+	return EDITORIALES[e];
+    }
+
+    /**
+     * Genera un año de publicación aleatorio.
+     * @return un año de publicación aleatorio.
+     */
+    public static int añoAleatorio() {
+        return 1900 + random.nextInt(120);
+    }
+
+    /**
+     * Genera un número de edición aleatorio.
+     * @return un número de edición aleatorio.
+     */
+    public static int edicionAleatoria() {
+        return 1 + random.nextInt(10);
+    }
+
+    /**
+     * Genera un número de págias aleatoria.
+     * @return una número de págias aleatoria.
+     */
+    public static int paginasAleatorias() {
+        return 100 + random.nextInt(500);
+    }
+
+    /**
+     * Genera un precio aleatorio.
+     * @return un precio aleatorio.
+     */
+    public static double precioAleatorio() {
+        return random.nextInt(5000) / 10.0 + 50.0;
+    }
+
+    /**
+     * Genera un libro aleatorio.
+     * @return un libro aleatorio.
+     */
+    public static Libro libroAleatorio() {
+	String[] datos = datosAleatorios();
+        return new Libro(datos[0],
+                         datos[1],
+			 editorialAleatoria(),
+			 añoAleatorio(),
+			 edicionAleatoria(),
+			 paginasAleatorias(),
+                         precioAleatorio());
+    }
+
+    /**
+     * Genera un libro aleatorio con un precio dado.
+     * @param precio el precio del nuevo libro.
+     * @return un libro aleatorio.
+     */
+    public static Libro libroAleatorio(double precio) {
+	String[] datos = datosAleatorios();
+        return new Libro(datos[0],
+                         datos[1],
+			 editorialAleatoria(),
+			 añoAleatorio(),
+			 edicionAleatoria(),
+			 paginasAleatorias(),
+                         precio);
+    }
+
+    private void actualiza() {
+	String[] datos = datosAleatorios();
+        titulo = datos[0];
+	autor = datos[1];
+	editorial = editorialAleatoria();
+	año = añoAleatorio();
+	edicion = edicionAleatoria();
+        paginas = paginasAleatorias();
+        precio = precioAleatorio();
+    }
+
+    /* El libro. */
+    private Libro libro;
+
+    /* Titulo. */
+    private String titulo;
+    /* Autor. */
+    private String autor;
+    /* Editorial. */
+    private String editorial;
+    /* Año de publicación. */
+    private int año;
+    /* Número de edición. */
+    private int edicion;
+    /* Número de páginas. */
+    private int paginas;
+    /* Precio. */
+    private double precio;
+
+    /* Enumeración espuria. */
+    private enum X {
+        /* Campo espurio. */
+        A;
+    }
+
+    /**
+     * Prueba unitaria para {@link
+     * Libro#Libro(String,String,String,int,int,int,double)}.
+     */
+    @Test public void testConstructor() {
+        actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getTitulo().equals(titulo));
+	Assert.assertTrue(libro.getAutor().equals(autor));
+	Assert.assertTrue(libro.getEditorial().equals(editorial));
+        Assert.assertTrue(libro.getAño() == año);
+	Assert.assertTrue(libro.getEdicion() == edicion);
+	Assert.assertTrue(libro.getPaginas() == paginas);
+        Assert.assertTrue(libro.getPrecio() == precio);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#getTitulo}.
+     */
+    @Test public void testGetTitulo() {
+        actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getTitulo().equals(titulo));
+        Assert.assertFalse(libro.getTitulo().equals(titulo + " X"));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#setTitulo}.
+     */
+    @Test public void testSetNombre() {
+        actualiza();
+	String nuevoTitulo = titulo + " X";
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getTitulo().equals(titulo));
+        Assert.assertFalse(libro.getTitulo().equals(nuevoTitulo));
+        libro.setTitulo(nuevoTitulo);
+        Assert.assertFalse(libro.getTitulo().equals(titulo));
+        Assert.assertTrue(libro.getTitulo().equals(nuevoTitulo));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#getAutor}.
+     */
+    @Test public void testGetAutor() {
+        actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getAutor().equals(autor));
+        Assert.assertFalse(libro.getAutor().equals(autor + " X"));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#setAutor}.
+     */
+    @Test public void testSetAutor() {
+        actualiza();
+	String nuevoAutor = autor + " X";
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getAutor().equals(autor));
+        Assert.assertFalse(libro.getAutor().equals(nuevoAutor));
+        libro.setAutor(nuevoAutor);
+        Assert.assertFalse(libro.getAutor().equals(autor));
+        Assert.assertTrue(libro.getAutor().equals(nuevoAutor));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#getEditorial}.
+     */
+    @Test public void testGetEditorial() {
+        actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getEditorial().equals(editorial));
+        Assert.assertFalse(libro.getEditorial().equals(editorial + " X"));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#setEditorial}.
+     */
+    @Test public void testSetEditorial() {
+        actualiza();
+	String nuevaEditorial = editorial + " X";
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getEditorial().equals(editorial));
+        Assert.assertFalse(libro.getEditorial().equals(nuevaEditorial));
+        libro.setEditorial(nuevaEditorial);
+        Assert.assertFalse(libro.getEditorial().equals(editorial));
+        Assert.assertTrue(libro.getEditorial().equals(nuevaEditorial));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#getAño}.
+     */
+    @Test public void testGetAño() {
+	actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getAño() == año);
+        Assert.assertFalse(libro.getAño() == año + 1);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#setAño}.
+     */
+    @Test public void testSetAño() {
+	actualiza();
+	int nuevoAño = año + 1;
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getAño() == año);
+        Assert.assertFalse(libro.getAño() == nuevoAño);
+        libro.setAño(nuevoAño);
+        Assert.assertFalse(libro.getAño() == año);
+        Assert.assertTrue(libro.getAño() == nuevoAño);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#getEdicion}.
+     */
+    @Test public void testGetEdicion() {
+	actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getEdicion() == edicion);
+        Assert.assertFalse(libro.getEdicion() == edicion + 1);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#setEdicion}.
+     */
+    @Test public void testSetEdicion() {
+	actualiza();
+	int nuevaEdicion = edicion + 1;
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getEdicion() == edicion);
+        Assert.assertFalse(libro.getEdicion() == nuevaEdicion);
+        libro.setEdicion(nuevaEdicion);
+        Assert.assertFalse(libro.getEdicion() == edicion);
+        Assert.assertTrue(libro.getEdicion() == nuevaEdicion);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#getPaginas}.
+     */
+    @Test public void testGetPaginas() {
+	actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getPaginas() == paginas);
+        Assert.assertFalse(libro.getPaginas() == paginas + 10);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#setPaginas}.
+     */
+    @Test public void testSetPaginas() {
+	actualiza();
+	int nuevasPaginas = paginas + 10;
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getPaginas() == paginas);
+        Assert.assertFalse(libro.getPaginas() == nuevasPaginas);
+        libro.setPaginas(nuevasPaginas);
+        Assert.assertFalse(libro.getPaginas() == paginas);
+        Assert.assertTrue(libro.getPaginas() == nuevasPaginas);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#getPrecio}.
+     */
+    @Test public void testGetPrecio() {
+	actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getPrecio() == precio);
+        Assert.assertFalse(libro.getPrecio() == precio + 10.0);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#setPrecio}.
+     */
+    @Test public void testSetPrecio() {
+	actualiza();
+	double nuevoPrecio = precio + 10.0;
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Assert.assertTrue(libro.getPrecio() == precio);
+        Assert.assertFalse(libro.getPrecio() == nuevoPrecio);
+        libro.setPrecio(nuevoPrecio);
+        Assert.assertFalse(libro.getPrecio() == precio);
+        Assert.assertTrue(libro.getPrecio() == nuevoPrecio);
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#toString}.
+     */
+    @Test public void testToString() {
+        actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        String cadena = String.format("Titulo    : %s\n" +
+			              "Autor     : %s\n" +
+				      "Editorial : %s\n" +
+				      "Año de publicación : %4d\n" +
+				      "Número de edición  : %d\n" +
+				      "Número de páginas  : %d\n" +
+				      "Precio    : $%2.2f\n" ,
+				      titulo, autor, editorial, año, edicion,
+				      paginas, precio);
+        Assert.assertTrue(libro.toString().equals(cadena));
+        paginas = 120;
+        precio = 50.99;
+        libro.setPaginas(paginas);
+        libro.setPrecio(precio);
+        cadena = String.format("Titulo    : %s\n" +
+			       "Autor     : %s\n" +
+			       "Editorial : %s\n" +
+			       "Año de publicación : %d\n" +
+			       "Número de edición  : %d\n" +
+			      "Número de páginas  : %d\n" +
+			       "Precio    : $%2.2f\n" ,
+			       titulo, autor, editorial, año, edicion,
+			       paginas, precio);
+        Assert.assertTrue(libro.toString().equals(cadena));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#equals}.
+     */
+    @Test public void testEquals() {
+	actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        Libro igual = new Libro(titulo, autor, editorial, año, edicion, paginas,
+				precio);
+        Assert.assertTrue(libro.equals(igual));
+	String otroTitulo = titulo + " Parte dos";
+	String otroAutor = autor + " X";
+	String otraEditorial = editorial + " Secundaria";
+	int otroAño = año + 1;
+	int otraEdicion = edicion + 1;
+        int otrasPaginas = paginas + 10;
+        double otroPrecio = precio + 10.0;
+        Libro distinto = new Libro(otroTitulo, autor, editorial, año, edicion,
+				   paginas, precio);
+        Assert.assertFalse(libro.equals(distinto));
+        distinto = new Libro(titulo, otroAutor, editorial, año, edicion,
+			     paginas, precio);
+        Assert.assertFalse(libro.equals(distinto));
+        distinto = new Libro(titulo, autor, otraEditorial, año, edicion,
+			     paginas, precio);
+        Assert.assertFalse(libro.equals(distinto));
+        distinto = new Libro(titulo, autor, editorial, otroAño, edicion,
+			     paginas, precio);
+        Assert.assertFalse(libro.equals(distinto));
+        distinto = new Libro(titulo, autor, editorial, año, otraEdicion,
+			     paginas, precio);
+        Assert.assertFalse(libro.equals(distinto));
+	distinto = new Libro(titulo, autor, editorial, año, edicion,
+			     otrasPaginas, precio);
+        Assert.assertFalse(libro.equals(distinto));
+	distinto = new Libro(titulo, autor, editorial, año, edicion,
+			     paginas, otroPrecio);
+        Assert.assertFalse(libro.equals(distinto));
+        Assert.assertFalse(libro.equals("Una cadena"));
+        Assert.assertFalse(libro.equals(null));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#serializa}.
+     */
+    @Test public void testSerializa() {
+        actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+        String linea = String.format("%s\t%s\t%s\t%d\t%d\t%d\t%2.2f\n",
+				     titulo, autor, editorial, año, edicion,
+				     paginas, precio);
+        Assert.assertTrue(libro.serializa().equals(linea));
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#deserializa}.
+     */
+    @Test public void testDeserializa() {
+        libro = new Libro(null, null, null, 0, 0, 0, 0.0);
+
+	actualiza();
+	
+        String linea = String.format("%s\t%s\t%s\t%d\t%d\t%d\t%2.2f\n",
+				     titulo, autor, editorial, año, edicion,
+				     paginas, precio);
+
+        try {
+            libro.deserializa(linea);
+        } catch (ExcepcionLineaInvalida eli) {
+            Assert.fail();
+        }
+
+        Assert.assertTrue(libro.getTitulo().equals(titulo));
+	Assert.assertTrue(libro.getAutor().equals(autor));
+	Assert.assertTrue(libro.getEditorial().equals(editorial));
+        Assert.assertTrue(libro.getAño() == año);
+        Assert.assertTrue(libro.getEdicion() == edicion);
+        Assert.assertTrue(libro.getPaginas() == paginas);
+	Assert.assertTrue(libro.getPrecio() == precio);
+
+        String[] invalidas = {"", " ", "\t", "  ", "\t\t",
+                              " \t", "\t ", "\n", "a\ta\ta",
+                              "a\ta\ta\ta\ta\ta\ta"};
+
+        for (int i = 0; i < invalidas.length; i++) {
+            linea = invalidas[i];
+            try {
+                libro.deserializa(linea);
+                Assert.fail();
+            } catch (ExcepcionLineaInvalida eli) {}
+        }
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#actualiza}.
+     */
+    @Test public void testActualiza() {
+        libro = new Libro("A", "A", "A", 1, 1, 1, 1);
+        Libro l = new Libro("B", "B", "B", 2, 2, 2, 2);
+        Assert.assertFalse(libro == l);
+        Assert.assertFalse(libro.equals(l));
+        libro.actualiza(l);
+        Assert.assertFalse(libro == l);
+        Assert.assertTrue(libro.equals(l));
+        try {
+            libro.actualiza(null);
+            Assert.fail();
+        } catch (IllegalArgumentException iae) {}
+        try {
+            libro.actualiza(new Registro() {
+                    @Override public String serializa() { return null; }
+                    @Override public void deserializa(String linea) {}
+                    @Override public void actualiza(Registro registro) {}
+                    @Override public boolean caza(Enum campo, Object valor) {
+                        return false;
+                    }
+                });
+            Assert.fail();
+        } catch (IllegalArgumentException iae) {}
+    }
+
+    /**
+     * Prueba unitaria para {@link Libro#caza}.
+     */
+    @Test public void testCaza() {
+	actualiza();
+        libro = new Libro(titulo, autor, editorial, año, edicion, paginas,
+			  precio);
+
+        String t = libro.getTitulo();
+        int m = libro.getTitulo().length();
+        Assert.assertTrue(libro.caza(CampoLibro.TITULO, t));
+        t = libro.getTitulo().substring(0, m/2);
+        Assert.assertTrue(libro.caza(CampoLibro.TITULO, t));
+        t = libro.getTitulo().substring(m/2, m);
+        Assert.assertTrue(libro.caza(CampoLibro.TITULO, t));
+        t = libro.getTitulo().substring(m/3, 2*(m/3));
+        Assert.assertTrue(libro.caza(CampoLibro.TITULO, t));
+        Assert.assertFalse(libro.caza(CampoLibro.TITULO, ""));
+        Assert.assertFalse(libro.caza(CampoLibro.TITULO, "XXX"));
+        Assert.assertFalse(libro.caza(CampoLibro.TITULO,
+                                           Integer.valueOf(1000)));
+        Assert.assertFalse(libro.caza(CampoLibro.TITULO, null));
+
+	String a = libro.getAutor();
+        m = libro.getAutor().length();
+        Assert.assertTrue(libro.caza(CampoLibro.AUTOR, a));
+        a = libro.getAutor().substring(0, m/2);
+        Assert.assertTrue(libro.caza(CampoLibro.AUTOR, a));
+        a = libro.getAutor().substring(m/2, m);
+        Assert.assertTrue(libro.caza(CampoLibro.AUTOR, a));
+        a = libro.getAutor().substring(m/3, 2*(m/3));
+        Assert.assertTrue(libro.caza(CampoLibro.AUTOR, a));
+        Assert.assertFalse(libro.caza(CampoLibro.AUTOR, ""));
+        Assert.assertFalse(libro.caza(CampoLibro.AUTOR, "XXX"));
+        Assert.assertFalse(libro.caza(CampoLibro.AUTOR,
+                                           Integer.valueOf(1000)));
+        Assert.assertFalse(libro.caza(CampoLibro.AUTOR, null));
+
+	String ed = libro.getEditorial();
+        m = libro.getEditorial().length();
+        Assert.assertTrue(libro.caza(CampoLibro.EDITORIAL, ed));
+        ed = libro.getEditorial().substring(0, m/2);
+        Assert.assertTrue(libro.caza(CampoLibro.EDITORIAL, ed));
+        ed = libro.getEditorial().substring(m/2, m);
+        Assert.assertTrue(libro.caza(CampoLibro.EDITORIAL, ed));
+        ed = libro.getEditorial().substring(m/3, 2*(m/3));
+        Assert.assertTrue(libro.caza(CampoLibro.EDITORIAL, ed));
+        Assert.assertFalse(libro.caza(CampoLibro.EDITORIAL, ""));
+        Assert.assertFalse(libro.caza(CampoLibro.EDITORIAL, "XXX"));
+        Assert.assertFalse(libro.caza(CampoLibro.EDITORIAL,
+                                           Integer.valueOf(1000)));
+        Assert.assertFalse(libro.caza(CampoLibro.EDITORIAL, null));
+
+        Integer añ = Integer.valueOf(libro.getAño());
+        Assert.assertTrue(libro.caza(CampoLibro.AÑO, añ));
+        añ = Integer.valueOf(libro.getAño() - 1);
+        Assert.assertTrue(libro.caza(CampoLibro.AÑO, añ));
+        añ = Integer.valueOf(libro.getAño() + 1);
+        Assert.assertFalse(libro.caza(CampoLibro.AÑO, añ));
+        Assert.assertFalse(libro.caza(CampoLibro.AÑO, "XXX"));
+        Assert.assertFalse(libro.caza(CampoLibro.AÑO, null));
+
+	Integer e = Integer.valueOf(libro.getEdicion());
+        Assert.assertTrue(libro.caza(CampoLibro.EDICION, e));
+        e = Integer.valueOf(libro.getEdicion() - 1);
+        Assert.assertTrue(libro.caza(CampoLibro.EDICION, e));
+        e = Integer.valueOf(libro.getEdicion() + 1);
+        Assert.assertFalse(libro.caza(CampoLibro.EDICION, e));
+        Assert.assertFalse(libro.caza(CampoLibro.EDICION, "XXX"));
+        Assert.assertFalse(libro.caza(CampoLibro.EDICION, null));
+	
+	Integer p = Integer.valueOf(libro.getPaginas());
+        Assert.assertTrue(libro.caza(CampoLibro.PAGINAS, p));
+        p = Integer.valueOf(libro.getPaginas() - 10);
+        Assert.assertTrue(libro.caza(CampoLibro.PAGINAS, p));
+        p = Integer.valueOf(libro.getPaginas() + 10);
+        Assert.assertFalse(libro.caza(CampoLibro.PAGINAS, p));
+        Assert.assertFalse(libro.caza(CampoLibro.PAGINAS, "XXX"));
+        Assert.assertFalse(libro.caza(CampoLibro.PAGINAS, null));
+
+        Double pr = Double.valueOf(libro.getPrecio());
+        Assert.assertTrue(libro.caza(CampoLibro.PRECIO, pr));
+        pr = Double.valueOf(libro.getPrecio() - 50.0);
+        Assert.assertTrue(libro.caza(CampoLibro.PRECIO, pr));
+        pr = Double.valueOf(libro.getPrecio() + 50.0);
+        Assert.assertFalse(libro.caza(CampoLibro.PRECIO, pr));
+        Assert.assertFalse(libro.caza(CampoLibro.PRECIO, "XXX"));
+        Assert.assertFalse(libro.caza(CampoLibro.PRECIO, null));
+
+        try {
+            libro.caza(null, null);
+            Assert.fail();
+        } catch (IllegalArgumentException iae) {}
+        try {
+            libro.caza(X.A, libro.getTitulo());
+            Assert.fail();
+        } catch (IllegalArgumentException iae) {}
+	try {
+            libro.caza(X.A, libro.getAutor());
+            Assert.fail();
+        } catch (IllegalArgumentException iae) {}
+	try {
+            libro.caza(X.A, libro.getEditorial());
+            Assert.fail();
+        } catch (IllegalArgumentException iae) {}
+        try {
+            Object o = Integer.valueOf(libro.getAño());
+            libro.caza(X.A, o);
+        } catch (IllegalArgumentException iae) {}
+	try {
+            Object o = Integer.valueOf(libro.getEdicion());
+            libro.caza(X.A, o);
+        } catch (IllegalArgumentException iae) {}
+	try {
+            Object o = Integer.valueOf(libro.getPaginas());
+            libro.caza(X.A, o);
+        } catch (IllegalArgumentException iae) {}
+        try {
+            Object o = Double.valueOf(libro.getPrecio());
+            libro.caza(X.A, o);
+        } catch (IllegalArgumentException iae) {}
+        try {
+            Assert.assertFalse(libro.caza(X.A, null));
+        } catch (IllegalArgumentException iae) {}
+    }
+
+    /* Inicializa el generador de números aleatorios. */
+    static {
+        random = new Random();
+    }
+}

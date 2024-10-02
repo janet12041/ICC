@@ -1,0 +1,343 @@
+package mx.unam.ciencias.icc;
+
+/**
+ * Clase para representar libros. Un libro tiene título, autor, editorial,
+ * año de publicación, número de edición, número de páginas y precio. La clase 
+ * implementa {@link Registro}, por lo que puede serializarse en una línea de 
+ * texto y deserializarse de una línea de texto; además de determinar si sus 
+ * campos cazan valores arbitrarios y actualizarse con los valores de otro 
+ * libro.
+ */
+public class Libro implements Registro {
+
+    /* Título del libro. */
+    private String titulo;
+    /* Autor. */
+    private String autor;
+    /* Editorial. */
+    private String editorial;
+    /* Año de publicación. */
+    private int año;
+    /* Número de edición */
+    private int edicion;
+    /* Número de páginas */
+    private int paginas;
+    /* Precio del libro. */
+    private double precio;
+
+    /**
+     * Define el estado inicial de un libro.
+     * @param titulo el título del libro.
+     * @param autor el autor del libro.
+     * @param editorial la editorial del libro.
+     * @param año el año en que se publicó el libro.
+     * @param edicion el número de edición del libro.
+     * @param paginas el número de páginas del libro.
+     * @param precio el precio del libro.
+     */
+    public Libro(String titulo,
+		      String autor,
+		      String editorial,
+                      int    año,
+		      int    edicion,
+		      int    paginas,
+                      double precio) {
+        this.titulo = titulo;
+	this.autor = autor;
+	this.editorial = editorial;
+	this.año = año;
+	this.edicion = edicion;
+	this.paginas = paginas;
+	this.precio = precio;
+    }
+
+    /**
+     * Regresa el título del libro.
+     * @return el título del libro.
+     */
+    public String getTitulo() {
+        return titulo;
+    }
+
+    /**
+     * Define el título del libro.
+     * @param titulo el nuevo título del libro.
+     */
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    /**
+     * Regresa el autor del libro.
+     * @return el autor del libro.
+     */
+    public String getAutor() {
+        return autor;
+    }
+
+    /**
+     * Define el autor del libro.
+     * @param autor el nuevo autor del libro.
+     */
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    /**
+     * Regresa la editorial del libro.
+     * @return la editorial del libro.
+     */
+    public String getEditorial() {
+        return editorial;
+    }
+
+    /**
+     * Define la editorial del libro.
+     * @param editorial la nueva editorial del libro.
+     */
+    public void setEditorial(String editorial) {
+        this.editorial = editorial;
+    }
+
+    /**
+     * Regresa el año de publicación del libro.
+     * @return el año de publicación del libro.
+     */
+    public int getAño() {
+        return año;
+    }
+
+    /**
+     * Define el año de publicación del libro.
+     * @param año el nuevo año de publicación del libro.
+     */
+    public void setAño(int año) {
+        this.año = año;
+    }
+
+    /**
+     * Regresa el número de edición del libro.
+     * @return el número de edición del libro.
+     */
+    public int getEdicion() {
+        return edicion;
+    }
+
+    /**
+     * Define el número de edición del libro.
+     * @param edicion el nuevo número de edición del libro.
+     */
+    public void setEdicion(int edicion) {
+        this.edicion = edicion;
+    }
+
+    /**
+     * Regresa el número de páginas del libro.
+     * @return el número de páginas del libro.
+     */
+    public int getPaginas() {
+        return paginas;
+    }
+
+    /**
+     * Define el número de páginas del libro.
+     * @param paginas el nuevo número de páginas del libro.
+     */
+    public void setPaginas(int paginas) {
+        this.paginas = paginas;
+    }
+
+    /**
+     * Regresa el precio del libro.
+     * @return el precio del libro.
+     */
+    public double getPrecio() {
+        return precio;
+    }
+
+    /**
+     * Define el precio del libro.
+     * @param precio el nuevo precio del libro.
+     */
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    /**
+     * Regresa una representación en cadena del libro.
+     * @return una representación en cadena del libro.
+     */
+    @Override public String toString() {
+         return String.format("Titulo    : %s\n" +
+			      "Autor     : %s\n" +
+			      "Editorial : %s\n" +
+			      "Año de publicación : %d\n" +
+			      "Número de edición  : %d\n" +
+			      "Número de páginas  : %d\n" +
+			      "Precio    : $%2.2f\n" ,
+			      titulo, autor, editorial, año, edicion,
+			      paginas, precio);
+    }
+
+    /**
+     * Nos dice si el objeto recibido es un libro igual al que manda llamar
+     * el método.
+     * @param objeto el objeto con el que el libro se comparará.
+     * @return <code>true</code> si el objeto recibido es un libro con las
+     *         mismas propiedades que el objeto que manda llamar al método,
+     *         <code>false</code> en otro caso.
+     */
+    @Override public boolean equals(Object objeto) {
+        if (!(objeto instanceof Libro))
+            return false;
+        Libro libro = (Libro)objeto;
+        return titulo.equals(libro.titulo) &&
+	       autor.equals(libro.autor) &&
+	       editorial.equals(libro.editorial) &&
+	       año == libro.año &&
+	       edicion == libro.edicion &&
+	       paginas == libro.paginas &&
+	       precio == libro.precio;
+    }
+
+    /**
+     * Regresa el libro serializado en una línea de texto. La línea de
+     * texto que este método regresa debe ser aceptada por el método {@link
+     * Libro#deserializa}.
+     * @return la serialización del libro en una línea de texto.
+     */
+    @Override public String serializa() {
+        return String.format("%s\t%s\t%s\t%d\t%d\t%d\t%2.2f\n",
+                             titulo, autor, editorial, año, edicion, paginas,
+			     precio);
+    }
+
+    /**
+     * Deserializa una línea de texto en las propiedades del libro. La
+     * serialización producida por el método {@link Libro#serializa} debe
+     * ser aceptada por este método.
+     * @param linea la línea a deserializar.
+     * @throws ExcepcionLineaInvalida si la línea recibida es nula, vacía o no
+     *         es una serialización válida de un libro.
+     */
+    @Override public void deserializa (String linea) {
+	if (linea == null)
+	    throw new ExcepcionLineaInvalida();
+	linea = linea.replace("\n", "");
+        String[] prop = linea.split("\t");
+	if (prop.length != 7 || prop[0] == "" || prop[0] == " "
+	    || prop[1] == "" || prop[1] == " " || prop[2] == ""
+	    || prop[2] == " ")
+	    throw new ExcepcionLineaInvalida();
+	try {
+	    titulo = prop[0];
+	    autor = prop[1];
+	    editorial = prop[2];
+	    año = Integer.parseInt(prop[3]);
+            edicion = Integer.parseInt(prop[4]);
+	    paginas = Integer.parseInt(prop[5]);
+	    precio = Double.parseDouble(prop[6]);
+	} catch (NumberFormatException e) {
+	    throw new ExcepcionLineaInvalida();
+	} 
+    }
+
+    /**
+     * Actualiza los valores del libro con los del registro recibido.
+     * @param registro el registro con el cual actualizar los valores.
+     * @throws IllegalArgumentException si el registro no es instancia de {@link
+     *         Libro}.
+     */
+    public void actualiza(Registro registro) {
+        if (!(registro instanceof Libro))
+            throw new IllegalArgumentException("El registro debe ser " +
+                                               "Libro");
+        Libro libro = (Libro)registro;
+        titulo = libro.getTitulo();
+	autor = libro.getAutor();
+	editorial = libro.getEditorial();
+	año = libro.getAño();
+	edicion = libro.getEdicion();
+	paginas = libro.getPaginas();
+	precio = libro.getPrecio();
+    }
+
+    /**
+     * Nos dice si el libro caza el valor dado en el campo especificado.
+     * @param campo el campo que hay que cazar.
+     * @param valor el valor con el que debe cazar el campo del registro.
+     * @return <code>true</code> si:
+     *         <ul>
+     *           <li><code>campo</code> es {@link CampoLibro#TITULO} y
+     *              <code>valor</code> es instancia de {@link String} y es una
+     *              subcadena del titulo del libro.</li>
+     *           <li><code>campo</code> es {@link CampoLibro#AUTOR} y
+     *              <code>valor</code> es instancia de {@link String} y es una
+     *              subcadena del autor del libro.</li>
+     *           <li><code>campo</code> es {@link CampoLibro#EDITORIAL} y
+     *              <code>valor</code> es instancia de {@link String} y es una
+     *              subcadena de la editorial del libro.</li>
+     *           <li><code>campo</code> es {@link CampoLibro#AÑO} y
+     *              <code>valor</code> es instancia de {@link Integer} y su
+     *              valor entero es menor o igual al año de publicación del
+     *              libro.</li>
+     *           <li><code>campo</code> es {@link CampoLibro#EDICION} y
+     *              <code>valor</code> es instancia de {@link Integer} y su
+     *              valor entero es menor o igual al número de edición del
+     *              libro.</li>
+     *           <li><code>campo</code> es {@link CampoLibro#PAGINAS} y
+     *              <code>valor</code> es instancia de {@link Integer} y su
+     *              valor entero es menor o igual al número de páginas del
+     *              libro.</li>
+     *           <li><code>campo</code> es {@link CampoLibro#PRECIO} y
+     *              <code>valor</code> es instancia de {@link Double} y su
+     *              valor doble es menor o igual al precio del libro.</li>
+     *         </ul>
+     *         <code>false</code> en otro caso.
+     * @throws IllegalArgumentException si el campo no es instancia de {@link
+     *         CampoLibro}.
+     */
+    public boolean caza(Enum campo, Object valor) {
+        if(!(campo instanceof CampoLibro))
+	    throw new IllegalArgumentException();
+	CampoLibro camp= (CampoLibro) campo;
+	switch (camp) {
+        case TITULO: if(valor instanceof String) {
+		         String val = (String) valor;
+	                 if(val != "" && titulo.indexOf(val) != -1)
+		              return true;
+	             } break;
+	case AUTOR: if(valor instanceof String) {
+		         String val = (String) valor;
+	                 if(val != "" && autor.indexOf(val) != -1)
+		              return true;
+	             } break;
+	case EDITORIAL: if(valor instanceof String) {
+		         String val = (String) valor;
+	                 if(val != "" && editorial.indexOf(val) != -1)
+		              return true;
+	             } break;
+	case AÑO: if(valor instanceof Integer) {
+		         int val = (int) valor;
+	         	 if (val <= año)
+		             return true;
+	             } break;
+	case EDICION: if(valor instanceof Integer) {
+		         int val = (int) valor;
+	         	 if (val <= edicion)
+		             return true;
+	             } break;
+	case PAGINAS: if(valor instanceof Integer) {
+		         int val = (int) valor;
+	         	 if (val <= paginas)
+		             return true;
+	             } break;
+	case PRECIO: if(valor instanceof Double) {
+			 Double val = (Double) valor;
+			 if(val <= precio)
+			     return true;
+	               } break;
+	}
+	return false;
+    }
+}
